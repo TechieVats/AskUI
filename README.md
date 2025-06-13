@@ -1,161 +1,169 @@
-# U-Ask Chatbot Test Suite
+# AskUI Chatbot Test Automation Framework
 
-This repository contains automated tests for the U-Ask UAE Government Chatbot using Playwright.
+A comprehensive test automation framework for validating the AskUI chatbot application's functionality, security, and AI capabilities. This framework implements advanced testing strategies using Playwright and TypeScript, with a focus on multi-language support, semantic analysis, and security validation.
 
-## Features
+## 🌟 Key Features
 
-- End-to-end testing of chatbot functionality
-- UI behavior validation
-- Response validation for both English and Arabic queries
-- Security testing against injection attempts
-- Accessibility testing
-- Page Object Model implementation
-- Comprehensive test data management
+### 🤖 AI & Language Processing
+- **Multi-language Support**: Comprehensive testing for both English and Arabic responses
+- **Semantic Similarity Analysis**: Advanced text comparison using TensorFlow.js and Universal Sentence Encoder
+- **Hallucination Detection**: Sophisticated tests to identify and prevent AI hallucinations
+- **Response Quality Validation**: Ensures consistent and accurate responses across languages
 
-## Prerequisites
+### 🔒 Security & Validation
+- **Input Validation**: Comprehensive testing of various input types and edge cases
+- **XSS Prevention**: Security measures against cross-site scripting attacks
+- **Malicious Input Handling**: Protection against harmful user inputs
+- **System Command Injection Prevention**: Security against command injection attempts
+- **HTML Formatting Validation**: Ensures safe and proper response formatting
 
-- Node.js (v16 or higher)
-- npm (v7 or higher)
+### 🎯 UI & Interaction Testing
+- **Automated UI Testing**: Comprehensive UI interaction validation
+- **Accessibility Testing**: Ensures the chatbot is accessible to all users
+- **Responsive Design Testing**: Validates chatbot behavior across different devices
+- **User Flow Validation**: Tests complete user interaction flows
 
-## Installation
+## 🛠️ Technology Stack
+
+### Core Technologies
+- **Playwright**: Modern end-to-end testing framework for web applications
+- **TypeScript**: Type-safe JavaScript for robust test development
+- **TensorFlow.js**: Machine learning library for semantic analysis
+- **Universal Sentence Encoder**: Advanced text comparison capabilities
+
+### Development Tools
+- **ESLint**: Code quality and style enforcement
+- **Prettier**: Code formatting
+- **Playwright Test Runner**: Test execution and reporting
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js (v14 or higher)
+- npm (v6 or higher) or yarn (v1.22 or higher)
+- TypeScript (v4.5 or higher)
+- Git
+
+## 🔧 Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd u-ask-tests
+git clone https://github.com/TechieVats/AskUI.git
 ```
 
 2. Install dependencies:
 ```bash
 npm install
+# or
+yarn install
 ```
 
-3. Install Playwright browsers:
+3. Build the project:
 ```bash
-npm run test:install
+npm run build
 ```
 
-## Project Structure
+## 🏃‍♂️ Running Tests
 
-```
-├── tests/
-│   ├── pages/           # Page Object Models
-│   ├── data/            # Test data management
-│   ├── ui/              # UI-specific tests
-│   ├── security/        # Security tests
-│   ├── ai/              # AI-specific tests
-│   └── chatbot.spec.ts  # Main test file
-├── playwright.config.ts # Playwright configuration
-└── test-data.json      # Test data
-```
-
-## Running Tests
-
-### Basic Commands
-
-- Run all tests:
+### Basic Test Execution
 ```bash
+# Run all tests
 npm test
-```
 
-- Run tests in headed mode:
-```bash
-npm run test:headed
-```
-
-- Run tests with retries:
-```bash
-npm run test:retry
-```
-
-- Run tests in parallel:
-```bash
-npm run test:parallel
-```
-
-### Specific Test Suites
-
-- UI Behavior Tests:
-```bash
+# Run tests with UI
 npm run test:ui
-```
 
-- Security Tests:
-```bash
-npm run test:security
-```
-
-- Accessibility Tests:
-```bash
-npm run test:accessibility
-```
-
-### Debugging
-
-- Run tests in debug mode:
-```bash
+# Run tests in debug mode
 npm run test:debug
 ```
 
-- Generate test code:
+### Advanced Test Options
 ```bash
-npm run test:codegen
+# Run specific test categories
+npm run test:ai        # Run AI-specific tests
+npm run test:security  # Run security tests
+npm run test:ui        # Run UI tests
+
+# Run tests with specific configuration
+npm run test:headed    # Run tests in headed mode
+npm run test:parallel  # Run tests in parallel
 ```
 
-### Reports
+## 📁 Project Structure
 
-- View test report:
-```bash
-npm run test:report
+```
+├── tests/
+│   ├── ai/                 # AI-specific tests
+│   │   ├── response-validation.spec.ts
+│   │   └── hallucination-detection.spec.ts
+│   ├── data/              # Test data management
+│   │   ├── TestDataManager.ts
+│   │   └── test-data.json
+│   ├── pages/             # Page object models
+│   │   └── ChatbotPage.ts
+│   ├── security/          # Security tests
+│   │   ├── xss.spec.ts
+│   │   └── injection.spec.ts
+│   ├── types/             # TypeScript type definitions
+│   ├── ui/                # UI interaction tests
+│   └── utils/             # Utility functions
+│       └── text-similarity.ts
+├── playwright.config.ts   # Playwright configuration
+├── tsconfig.json         # TypeScript configuration
+└── package.json          # Project dependencies
 ```
 
-## Code Quality
+## 🧪 Test Categories
 
-- Lint code:
-```bash
-npm run lint
-```
+### Response Validation
+- **English Query Testing**: Validates responses to English queries
+- **Arabic Query Testing**: Ensures proper handling of Arabic language inputs
+- **Semantic Analysis**: Advanced text similarity validation
+- **Fallback Handling**: Tests system behavior with invalid inputs
+- **Format Validation**: Ensures proper HTML formatting in responses
 
-- Fix linting issues:
-```bash
-npm run lint:fix
-```
+### Security Testing
+- **Input Validation**: Tests various input types and edge cases
+- **XSS Prevention**: Validates protection against cross-site scripting
+- **Malicious Input**: Tests handling of potentially harmful inputs
+- **Command Injection**: Ensures protection against system command injection
 
-- Format code:
-```bash
-npm run format
-```
+### AI Functionality
+- **Hallucination Detection**: Identifies and prevents AI hallucinations
+- **Multi-language Support**: Validates consistent behavior across languages
+- **Semantic Consistency**: Ensures meaning preservation across languages
+- **Response Quality**: Validates response accuracy and relevance
 
-## Best Practices
+## ⚠️ Important Notes
 
-1. **Page Object Model**
-   - All page interactions are encapsulated in the `ChatbotPage` class
-   - Selectors are defined as class properties
-   - Methods represent user actions
+### Test Execution
+- Tests include a 60-second wait time for manual reCAPTCHA handling
+- Tests run in serial mode to prevent interference
+- Some tests require manual intervention for reCAPTCHA verification
 
-2. **Test Data Management**
-   - Test data is managed through `TestDataManager`
-   - Supports both English and Arabic queries
-   - Includes security test cases
+### Best Practices
+- Always run tests in a clean environment
+- Keep test data up to date
+- Follow the established naming conventions
+- Document any new test cases
 
-3. **Error Handling**
-   - Comprehensive error handling in all test methods
-   - Detailed error logging
-   - Graceful failure handling
+## 🤝 Contributing
 
-4. **Accessibility**
-   - Keyboard navigation testing
-   - Loading state verification
-   - RTL support for Arabic
-
-## Contributing
+We welcome contributions! Please follow these steps:
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and ensure they pass
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## License
+### Contribution Guidelines
+- Write clear, descriptive commit messages
+- Follow the existing code style
+- Add tests for new features
+- Update documentation as needed
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+
+## 👥 Authors
+
+- **Abhishek Vats** - *Initial work* - [Your GitHub Profile](https://github.com/TechieVats)
