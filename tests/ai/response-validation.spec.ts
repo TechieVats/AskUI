@@ -6,8 +6,6 @@ import { forbiddenElements, forbiddenAttributes, forbiddenProtocols } from '../d
 
 // Increase test timeout to 120 seconds to allow for manual reCAPTCHA handling
 test.setTimeout(120000);
-
-// Disable parallel test execution
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Response Validation Tests', () => {
@@ -145,7 +143,7 @@ test.describe('Response Validation Tests', () => {
         console.log('HTML formatting validation completed successfully');
     });
 
-    test.skip('validates semantic consistency between English and Arabic responses', async () => {
+    test('validates semantic consistency between English and Arabic responses', async () => {
         const englishQuery = testData.getEnglishQueries()[0];
         const arabicQuery = testData.getArabicQueries()[0];
         

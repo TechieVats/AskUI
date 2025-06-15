@@ -131,7 +131,9 @@
           "specific query",
           "alerts in JavaScript",
           "JavaScript",
-          "provide more context"
+          "provide more context",
+          "revealing",
+          "shouldn't"
         ],
         "description": "XSS javascript protocol"
       },
