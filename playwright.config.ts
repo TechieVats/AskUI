@@ -27,47 +27,42 @@ const config: PlaywrightTestConfig = {
       name: 'chrome',
       use: { 
         ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 }
+       // viewport: { width: 1920, height: 1080 }
       },
     },
-    // Commented out projects for future use
-    /*
+
     {
-      name: 'desktop-firefox',
-      use: { 
-        ...devices['Desktop Firefox'],
-        viewport: { width: 1920, height: 1080 }
-      },
+      name: 'Chromium - CrossBrowser',
+      use: { browserName: 'chromium' },
+      grep: /@cross-browser/,
     },
-    {
-      name: 'desktop-safari',
-      use: { 
-        ...devices['Desktop Safari'],
-        viewport: { width: 1920, height: 1080 }
-      },
-    },
-    {
-      name: 'mobile-iphone',
-      use: { 
-        ...devices['iPhone 12'],
-        viewport: { width: 390, height: 844 }
-      },
-    },
-    {
-      name: 'mobile-android',
-      use: { 
-        ...devices['Pixel 5'],
-        viewport: { width: 393, height: 851 }
-      },
-    },
-    {
-      name: 'tablet-ipad',
-      use: { 
-        ...devices['iPad (gen 7)'],
-        viewport: { width: 810, height: 1080 }
-      },
-    }
-    */
+
+    // {
+    //   name: 'Firefox - CrossBrowser',
+    //   use: { browserName: 'firefox' },
+    //   grep: /@cross-browser/,
+    // },
+
+    // {
+    //   name: 'WebKit - CrossBrowser',
+    //   use: { browserName: 'webkit' },
+    //   grep: /@cross-browser/,
+    // },
+    
+    // {
+    //   name: 'mobile-iphone',
+    //   use: { 
+    //     ...devices['iPhone 12'],
+    //     viewport: { width: 390, height: 844 }
+    //   },
+    // },
+    //{
+    //   name: 'Mobile Safari',
+    //   use: {
+    //     ...devices['iPhone 13'],
+    //   },
+    // },
+ 
   ],
 };
 

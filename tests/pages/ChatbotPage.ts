@@ -24,6 +24,7 @@ export class ChatbotPage {
     readonly predictionButtons: Locator;
     readonly searchResultLink: Locator;
     readonly chatContainer: Locator;
+    readonly micButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -31,6 +32,7 @@ export class ChatbotPage {
         // Input area - exact selectors from HTML
         this.inputBox = page.locator('.expando-textarea.chat-input-question');
         this.sendButton = page.locator('#sendButton');
+        this.micButton = page.locator('button.user-banner-btn.input-group-text.speech-recognition');
         
         // Messages area
         this.messagesContainer = page.locator('//div[@data-placeholder="Please ask me a question"]');

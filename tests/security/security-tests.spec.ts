@@ -2,10 +2,8 @@ import { test, expect } from '@playwright/test';
 import { ChatbotPage } from '../pages/ChatbotPage';
 import { TestDataManager, SecurityTest } from '../data/TestDataManager';
 
-// Increase test timeout to 120 seconds to allow for manual reCAPTCHA handling
 test.setTimeout(120000);
 
-// Disable parallel test execution
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Security Tests', () => {

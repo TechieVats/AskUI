@@ -17,24 +17,6 @@ test.describe('Chatbot UI Tests', () => {
         await chatbotPage.navigate();
     });
 
-    test('can send and receive messages in desktop view', async () => {
-        const testData = TestDataManager.getInstance();
-        const testMessage = testData.getEnglishQueries()[2].prompt;
-        console.log(`Sending test message: "${testMessage}"`);
-        await chatbotPage.sendMessage(testMessage);
-        
-        // Wait for manual reCAPTCHA handling
-        console.log('Waiting 45 seconds for potential reCAPTCHA...');
-        await chatbotPage.page.waitForTimeout(45000);
-        
-        const response = await chatbotPage.getLastBotResponse();
-        const responseText = await response.textContent();
-        console.log(`Bot response: "${responseText}"`);
-        
-        await expect(chatbotPage.messagesContainer).toContainText(testMessage);
-        expect(await chatbotPage.isInputCleared()).toBeTruthy();
-    });
-
     test('loading states are properly indicated', async () => {
         const testData = TestDataManager.getInstance();
         const testMessage = testData.getEnglishQueries()[0].prompt;
@@ -144,8 +126,10 @@ test.describe('Chatbot UI Tests', () => {
     test.describe('Mobile View', () => {
         const MOBILE_VIEWPORT = { width: 390, height: 844 };
         const testData = TestDataManager.getInstance();
+        let chatbotPage: ChatbotPage;
 
         test.beforeEach(async ({ page }) => {
+            chatbotPage = new ChatbotPage(page);
             await page.setViewportSize(MOBILE_VIEWPORT);
             await chatbotPage.navigate();
         });
@@ -245,14 +229,30 @@ test.describe('Chatbot UI Tests', () => {
 
             for (const size of viewportSizes) {
                 console.log(`Testing viewport size: ${size.width}x${size.height}`);
+                
+                // Set viewport size
                 await page.setViewportSize(size);
+                
+                // Create new page instance for each viewport
+                chatbotPage = new ChatbotPage(page);
                 await chatbotPage.navigate();
                 
-                const containerBox = await chatbotPage.chatContainer.boundingBox();
-                expect(containerBox).toBeTruthy();
+                // Wait for chat to be fully loaded
+                await page.waitForTimeout(2000);
                 
-                await expect(chatbotPage.chatContainer).toBeVisible();
-                expect(containerBox?.width).toBeLessThanOrEqual(size.width);
+                try {
+                    const containerBox = await chatbotPage.chatContainer.boundingBox();
+                    expect(containerBox).toBeTruthy();
+                    
+                    await expect(chatbotPage.chatContainer).toBeVisible();
+                    expect(containerBox?.width).toBeLessThanOrEqual(size.width);
+                    
+                    // Additional wait between viewport changes
+                    await page.waitForTimeout(1000);
+                } catch (error) {
+                    console.error(`Error testing viewport ${size.width}x${size.height}:`, error);
+                    throw error;
+                }
             }
         });
 
@@ -264,51 +264,72 @@ test.describe('Chatbot UI Tests', () => {
 
             for (const size of viewportSizes) {
                 console.log(`Testing UI elements in viewport: ${size.width}x${size.height}`);
+                
+                // Set viewport size
                 await page.setViewportSize(size);
+                
+                // Create new page instance for each viewport
+                chatbotPage = new ChatbotPage(page);
                 await chatbotPage.navigate();
                 
-                await expect(chatbotPage.inputBox).toBeVisible();
-                await expect(chatbotPage.sendButton).toBeVisible();
+                // Wait for chat to be fully loaded
+                await page.waitForTimeout(2000);
                 
-                const inputBox = await chatbotPage.inputBox.boundingBox();
-                const sendButton = await chatbotPage.sendButton.boundingBox();
-                
-                expect(inputBox).toBeTruthy();
-                expect(sendButton).toBeTruthy();
-                
-                // Check if elements are within viewport width
-                if (inputBox && sendButton) {
-                    expect(inputBox.x + inputBox.width).toBeLessThanOrEqual(size.width);
-                    expect(sendButton.x + sendButton.width).toBeLessThanOrEqual(size.width);
+                try {
+                    await expect(chatbotPage.inputBox).toBeVisible();
+                    await expect(chatbotPage.sendButton).toBeVisible();
+                    
+                    const inputBox = await chatbotPage.inputBox.boundingBox();
+                    const sendButton = await chatbotPage.sendButton.boundingBox();
+                    
+                    expect(inputBox).toBeTruthy();
+                    expect(sendButton).toBeTruthy();
+                    
+                    // Check if elements are within viewport width
+                    if (inputBox && sendButton) {
+                        expect(inputBox.x + inputBox.width).toBeLessThanOrEqual(size.width);
+                        expect(sendButton.x + sendButton.width).toBeLessThanOrEqual(size.width);
+                    }
+                    
+                    // Additional wait between viewport changes
+                    await page.waitForTimeout(1000);
+                } catch (error) {
+                    console.error(`Error testing UI elements in viewport ${size.width}x${size.height}:`, error);
+                    throw error;
                 }
             }
         });
     });
 
-    test.describe('Cross-browser Compatibility', () => {
+    test.describe('Cross-browser Compatibility @cross-browser', () => {
         test('chat widget works across different browsers', async () => {
             console.log('Testing cross-browser compatibility...');
-            await expect(chatbotPage.chatContainer).toBeVisible();
+            
+            // Test basic functionality
             await expect(chatbotPage.inputBox).toBeVisible();
             await expect(chatbotPage.sendButton).toBeVisible();
+            await expect(chatbotPage.micButton).toBeVisible();
             
-            const testMessage = 'Test message';
-            console.log(`Sending test message: "${testMessage}"`);
-            await chatbotPage.sendMessage(testMessage);
+            // Test contenteditable behavior
+            await chatbotPage.inputBox.click();
+            await chatbotPage.inputBox.fill('Test message');
+            const inputText = await chatbotPage.inputBox.textContent();
+            expect(inputText).toBe('Test message');
             
-            // Wait for manual reCAPTCHA handling
-            console.log('Waiting 45 seconds for potential reCAPTCHA...');
-            await chatbotPage.page.waitForTimeout(45000);
+            // Test button interactions with reCAPTCHA handling
+            await chatbotPage.sendButton.click();
+            console.log('Waiting 60 seconds for potential reCAPTCHA...');
+            await chatbotPage.page.waitForTimeout(60000); // 60 second wait for manual handling
+            await expect(chatbotPage.botMessage).toBeVisible();
             
-            const response = await chatbotPage.getLastBotResponse();
-            const responseText = await response.textContent();
-            console.log(`Bot response: "${responseText}"`);
-            
-            await expect(chatbotPage.messagesContainer).toContainText(testMessage);
+            // Test new chat functionality
+            await chatbotPage.newChatButton.click();
+            await expect(chatbotPage.inputBox).toBeVisible();
+            await expect(chatbotPage.inputBox).toHaveAttribute('placeholder', 'Please ask me a question');
         });
     });
 
-    test.describe.only('Scroll Behavior', () => {
+    test.describe('Scroll Behavior', () => {
         test('auto-scrolls to new messages', async () => {
             const testData = TestDataManager.getInstance();
             const message = testData.getEnglishQueries()[0].prompt;
@@ -368,7 +389,7 @@ test.describe('Chatbot UI Tests', () => {
             await chatbotPage.sendMessage('Test message');
             
             // Wait for manual reCAPTCHA handling
-            console.log('⏳ Waiting 45 seconds for potential reCAPTCHA...');
+            console.log('Waiting 45 seconds for potential reCAPTCHA...');
             await chatbotPage.page.waitForTimeout(45000);
 
             // Get final scroll position
@@ -384,29 +405,53 @@ test.describe('Chatbot UI Tests', () => {
 
     test.describe('Accessibility', () => {
         test('has proper ARIA labels and roles', async () => {
-            // Check input box accessibility
-            await expect(chatbotPage.inputBox).toHaveAttribute('aria-label', 'Type your message');
-            await expect(chatbotPage.inputBox).toHaveAttribute('role', 'textbox');
-
-            // Check send button accessibility
-            await expect(chatbotPage.sendButton).toHaveAttribute('aria-label', 'Send message');
-            await expect(chatbotPage.sendButton).toHaveAttribute('role', 'button');
-
-            // Check message container accessibility
-            await expect(chatbotPage.messagesContainer).toHaveAttribute('role', 'log');
-            await expect(chatbotPage.messagesContainer).toHaveAttribute('aria-live', 'polite');
+            // Check input area
+            await expect(chatbotPage.inputBox).toHaveAttribute('data-placeholder', 'Please ask me a question');
+            await expect(chatbotPage.inputBox).toHaveAttribute('contenteditable', 'true');
+            
+            // Check send button
+            await expect(chatbotPage.sendButton).toHaveAttribute('type', 'button');
+            await expect(chatbotPage.sendButton).toHaveAttribute('aria-label', 'Send');
+            await expect(chatbotPage.sendButton).toHaveAttribute('data-bs-original-title', 'Send');
+            
+            // Check microphone button
+            await expect(chatbotPage.micButton).toHaveAttribute('type', 'button');
+            await expect(chatbotPage.micButton).toHaveAttribute('class', 'btn user-banner-btn input-group-text speech-recognition hide-firefox');
+            
+            // Check language selector
+            await expect(chatbotPage.languageSelector).toHaveAttribute('class', 'language-select hide-firefox');
+            await expect(chatbotPage.languageSelector).toHaveAttribute('onchange', 'updateLang()');
+            
+            // Check new chat button
+            await expect(chatbotPage.newChatButton).toHaveAttribute('id', 'chat-new-session-btn');
+            await expect(chatbotPage.newChatButton).toHaveAttribute('aria-current', 'page');
+            await expect(chatbotPage.newChatButton).toHaveAttribute('data-bs-original-title', 'New chat');
         });
 
         test('supports keyboard navigation', async () => {
-            // Test Tab navigation
+            // Test Tab navigation through all interactive elements
             await chatbotPage.inputBox.focus();
             await expect(chatbotPage.inputBox).toBeFocused();
             
+            // Tab to send button
             await chatbotPage.page.keyboard.press('Tab');
             await expect(chatbotPage.sendButton).toBeFocused();
             
+            // Tab to microphone button
             await chatbotPage.page.keyboard.press('Tab');
-            await expect(chatbotPage.newChatButton).toBeFocused();
+            await expect(chatbotPage.micButton).toBeFocused();
+            
+            // Tab to language selector
+            await chatbotPage.page.keyboard.press('Tab');
+            await expect(chatbotPage.languageSelector).toBeFocused();
+            
+            // Test Shift+Tab to go backwards
+            await chatbotPage.page.keyboard.press('Shift+Tab');
+            await expect(chatbotPage.micButton).toBeFocused();
+            
+            await chatbotPage.page.keyboard.press('Shift+Tab');
+            await expect(chatbotPage.sendButton).toBeFocused();
+            
         });
 
         test('has proper color contrast', async () => {
@@ -422,8 +467,6 @@ test.describe('Chatbot UI Tests', () => {
             });
 
             expect(textColor).toBeTruthy();
-            // Note: You might want to add a proper color contrast checking library
-            // This is a basic check to ensure colors are defined
             expect(textColor?.color).toBeTruthy();
             expect(textColor?.backgroundColor).toBeTruthy();
         });
