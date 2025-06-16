@@ -102,10 +102,10 @@ npm run test:parallel  # Run tests in parallel
 │   ├── pages/             # Page object models
 │   │   └── ChatbotPage.ts
 │   ├── security/          # Security tests
-│   │   ├── xss.spec.ts
-│   │   └── injection.spec.ts
+│   │ └── security-tests.spec.ts
 │   ├── types/             # TypeScript type definitions
-│   ├── ui/                # UI interaction tests
+│   ├── ui/
+│   │    └── chatbot-ui.spec.ts   # UI interaction tests
 │   └── utils/             # Utility functions
 │       └── text-similarity.ts
 ├── playwright.config.ts   # Playwright configuration
